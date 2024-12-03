@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public class Day2 {
   public static void main(String[] args) throws IOException {
     final List<List<Integer>> reports = Files.lines(REPORTS_FILE_PATH)
         .map(line -> parseReport(line))
-        .filter(report -> isReportSafe(report))
+        .filter(report -> isReportSafe(report, true))
         .toList();
 
     System.out.printf("%d reports are safe%n", reports.size());
@@ -28,8 +29,12 @@ public class Day2 {
         .toList();
   }
 
-  private static boolean isReportSafe(List<Integer> report) {
-    return areIncreasingLevelsValid(report) || areDecreasingLevelsValid(report);
+  private static boolean isReportSafe(List<Integer> report, boolean withDampener) {
+    if (withDampener) {
+      return areIncreasingLevelsValidWithDampener(report) || areDecreasingLevelsValidWithDampener(report);
+    } else {
+      return areIncreasingLevelsValid(report) || areDecreasingLevelsValid(report);
+    }
   }
 
   private static boolean areIncreasingLevelsValid(List<Integer> report) {
@@ -58,5 +63,44 @@ public class Day2 {
       }
     }
     return true;
+  }
+
+  private static boolean areIncreasingLevelsValidWithDampener(List<Integer> report) {
+    for (int index = 0; index < report.size() - 1; index++) {
+      boolean isIncreasing = report.get(index + 1) > report.get(index);
+      boolean isDifferenceAtMostThree = report.get(index + 1) - report.get(index) <= 3;
+
+      if (!isIncreasing || !isDifferenceAtMostThree) {
+        // Problem dampener triggers and checks if the problematic level is the current
+        // or the next one.
+        return areIncreasingLevelsValid(getReportWithoutLevelAt(report, index))
+            || areIncreasingLevelsValid(getReportWithoutLevelAt(report, index + 1));
+      }
+    }
+    return true;
+  }
+
+  private static boolean areDecreasingLevelsValidWithDampener(List<Integer> report) {
+    for (int index = 0; index < report.size() - 1; index++) {
+      boolean isDecreasing = report.get(index + 1) < report.get(index);
+      boolean isDifferenceAtMostThree = report.get(index) - report.get(index + 1) <= 3;
+
+      if (!isDecreasing || !isDifferenceAtMostThree) {
+        // Problem dampener triggers and checks if the problematic level is the current
+        // or the next one.
+        return areDecreasingLevelsValid(getReportWithoutLevelAt(report, index))
+            || areDecreasingLevelsValid(getReportWithoutLevelAt(report, index + 1));
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Returns a copy of the report without the level at the given index.
+   */
+  private static List<Integer> getReportWithoutLevelAt(List<Integer> report, int index) {
+    List<Integer> reportCopy = new ArrayList<>(report);
+    reportCopy.remove(index);
+    return reportCopy;
   }
 }
