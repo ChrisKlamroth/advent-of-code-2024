@@ -1,0 +1,19 @@
+{
+  "name": "advent-of-code-2024",
+  "version": "1.0.0",
+  "description": "Advent of code 2024",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "clean": "rm -rf dist",
+    "start": "npm run build && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Christoph Klamroth",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "typescript": "^5.7.2"
+  }
+}
