@@ -4,7 +4,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Day1 {
@@ -25,8 +27,10 @@ public class Day1 {
     final int totalDistance = calculateTotalDistance(
         sort(locationIdsLeft),
         sort(locationIdsRight));
+    final int totalSimilarityScore = calculateTotalSimilarityScore(locationIdsLeft, locationIdsRight);
 
     System.out.printf("The total distance is %d%n", totalDistance);
+    System.out.printf("The total similarity score is %d%n", totalSimilarityScore);
   }
 
   private static List<Integer> parseLocationIds(String line) {
@@ -57,5 +61,20 @@ public class Day1 {
     }
 
     return totalDistance;
+  }
+
+  private static int calculateTotalSimilarityScore(List<Integer> locationIdsLeft, List<Integer> locationIdsRight) {
+    final Map<Integer, Integer> appearancesOnRight = new HashMap<>();
+    int totalSimilarityScore = 0;
+
+    for (final Integer left : locationIdsLeft) {
+      if (!appearancesOnRight.containsKey(left)) {
+        final int appearances = locationIdsRight.stream().filter(right -> left.equals(right)).toList().size();
+        appearancesOnRight.put(left, appearances);
+      }
+      totalSimilarityScore = totalSimilarityScore + (left * appearancesOnRight.get(left));
+    }
+
+    return totalSimilarityScore;
   }
 }
