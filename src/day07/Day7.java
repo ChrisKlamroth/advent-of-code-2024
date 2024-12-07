@@ -12,6 +12,7 @@ public class Day7 {
 
   public static void main(String[] args) throws IOException {
     part1();
+    part2();
   }
 
   private static void part1() throws IOException {
@@ -20,10 +21,23 @@ public class Day7 {
         .toList();
 
     final long resultSum = equations.stream()
-        .filter(equation -> equation.isValid())
+        .filter(equation -> equation.isValid(false))
         .map(equation -> equation.getResult())
         .reduce(0l, (sum, result) -> sum + result);
 
     System.out.printf("The total calibration result is %d%n", resultSum);
+  }
+
+  private static void part2() throws IOException {
+    final List<Equation> equations = Files.lines(CALIBRATIONS_FILE_PATH)
+        .map(Equation::fromFileLine)
+        .toList();
+
+    final long resultSum = equations.stream()
+        .filter(equation -> equation.isValid(true))
+        .map(equation -> equation.getResult())
+        .reduce(0l, (sum, result) -> sum + result);
+
+    System.out.printf("The total calibration result with concatenation is %d%n", resultSum);
   }
 }
